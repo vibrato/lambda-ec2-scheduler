@@ -18,6 +18,15 @@ To create a deployment package (code+dependencies):
 
 	./build.sh
 
+# Install
+
+To install:
+
+* Build
+* Upload to S3
+* Deploy cloudformation.yaml
+* Tag instances
+
 # Permissions
 Required role permissions:
 
