@@ -12,7 +12,7 @@ Parameters:
   ScheduleExpression:
     Type: String
     Description: 'Valid CloudWatch Events schedule expression http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html'
-    Default: 'cron(1 * * * ? *)'
+    Default: 'cron(5 * * * ? *)'
 
 Resources:
   Ec2Scheduler:
@@ -52,6 +52,12 @@ Resources:
                   - ec2:StartInstances
                   - ec2:StopInstances
                 Resource: '*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: 'arn:aws:logs:*:*:*'
 
   ScheduledRule:
     Type: AWS::Events::Rule

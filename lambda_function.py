@@ -76,6 +76,7 @@ def find_instances(tag, state):
 
 def lambda_handler(event, context):
     # Stop first, this may slightly save cost (if going over EC2 usage hour)
+    print 'looking for:', currentHour, currentDOW
     print 'to stop:'
     for inst in find_instances(STOP_TAG, 'running'):
         print inst.stop()

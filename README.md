@@ -43,6 +43,15 @@ Required role permissions:
 				"Resource": [
 					"*"
 				]
+			},
+			{
+				"Effect": "Allow",
+				"Action": [
+					"logs:CreateLogGroup",
+					"logs:CreateLogStream",
+					"logs:PutLogEvents"
+				],
+				"Resource": "arn:aws:logs:*:*:*"
 			}
 		]
 	}
