@@ -28,11 +28,6 @@ import re
 
 ec2 = boto3.resource('ec2')
 
-tz = pytz.timezone(TIMEZONE)
-now = datetime.datetime.now(tz)
-currentHour = now.hour
-currentDOW = now.weekday()
-
 def filter_instances(tag, state):
     filters = FILTERS + [ {
         'Name': 'tag-key',
@@ -60,26 +55,31 @@ def parse_tag_value(value):
     data.update(dict(_parser(value)))
     return data
 
-def find_instances(tag, state):
+def find_instances(tag, state, hour, dow):
     tagged = filter_instances(tag, state)
     for i in tagged:
         print i,
         info = parse_tag_value(get_tag(tag, i.tags))
         print info,
-        if info['DOW'] is not None and str(currentDOW) in info['DOW']:
+        if info['DOW'] is not None and str(dow) in info['DOW']:
             print 'DOW match.',
-            if info['H'] is not None and str(currentHour) == info['H']:
+            if info['H'] is not None and str(hour) == info['H']:
                 print 'H match.',
                 print 'perform action'
                 yield i
         print
 
 def lambda_handler(event, context):
+    tz = pytz.timezone(TIMEZONE)
+    now = datetime.datetime.now(tz)
+    currentHour = now.hour
+    currentDOW = now.weekday()
+
     # Stop first, this may slightly save cost (if going over EC2 usage hour)
-    print 'looking for:', currentHour, currentDOW
+    print 'looking for: H', currentHour, 'DOW', currentDOW
     print 'to stop:'
-    for inst in find_instances(STOP_TAG, 'running'):
+    for inst in find_instances(STOP_TAG, 'running', currentHour, currentDOW):
         print inst.stop()
     print 'to start:'
-    for inst in find_instances(START_TAG, 'stopped'):
+    for inst in find_instances(START_TAG, 'stopped', currentHour, currentDOW):
         print inst.start()
